@@ -1,0 +1,29 @@
+version: "3.5"
+
+services:
+
+   postgresql:
+      image: postgis/postgis
+      container_name: skynet
+      ports:
+         - 5432:5432
+      volumes:
+         - ./postgresql/data:/var/lib/postgresql/data
+         - ./postgresql/backups:/backups
+         - ./postgresql/init:/init
+ 
+      environment:
+         ## MAINTENANCE DB
+         - POSTGRES_PASSWORD=m2vRgW8euk8DXWDF
+
+   fastapi:
+      image: fastapi
+      build:
+         context: ./
+         dockerfile: ./fastapi/Dockerfile
+      ports: 
+         - "90:80"
+      volumes:
+         - ./fastapi/app:/app
+
+         
