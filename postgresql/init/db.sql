@@ -52,4 +52,4 @@ ALTER TABLE tb_buildings_footprints ADD CONSTRAINT id_city_fk
 	FOREIGN KEY (id_city) REFERENCES tb_cities(id);
 
 
-INSERT INTO tb_nations(name, pretty_name, geometry) VALUES ("test", "test", ST_GeomFromText("POLYGON((0 0, 1 1, 2 2, 0 0))"));
+INSERT INTO tb_nations(name, pretty_name, geometry) VALUES ("test", "test", ST_GeomFromText("MULTIPOLYGON(((0 0, 1 1, 2 2, 0 0)))"));

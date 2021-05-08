@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 
 
 app = FastAPI()
+db = PostgreSQLManager()
 
 @app.get("/test")
 def todo(name: str):
