@@ -14,7 +14,7 @@ services:
  
       environment:
          ## MAINTENANCE DB
-         - POSTGRES_PASSWORD=m2vRgW8euk8DXWDF
+         - POSTGRES_PASSWORD=m2vRgW8euk8DXWDF # TODO work w/ secrets and edit password
 
    fastapi:
       image: fastapi
@@ -22,8 +22,14 @@ services:
          context: ./
          dockerfile: ./fastapi/Dockerfile
       ports: 
-         - "90:80"
+         - "80:80"
       volumes:
          - ./fastapi/app:/app
+      environment: 
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=m2vRgW8euk8DXWDF
+      - POSTGRESQL_HOST=postgresql
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_DATABASE=skynet
 
          
