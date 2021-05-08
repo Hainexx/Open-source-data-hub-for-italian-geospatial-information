@@ -6,6 +6,22 @@ import traceback
 import itertools
 from io import StringIO
 
+def get(dictionary, key, default=None, common_dictionary=None):
+    if key in dictionary:
+        return dictionary[key]
+    elif common_dictionary is not None and key in common_dictionary:
+        return common_dictionary[key]
+    return default
+
+def merge_dicts_priority(first, second):
+    if first is None:
+        return second
+    if second is None:
+        return first
+    # common keys of second will be overwritten by first
+    return {**second, **first}
+
+
 class Query():
     def __init__(self, query, params=None, fast=False):
         self.query = query
