@@ -5,7 +5,6 @@ import os
 import traceback
 import itertools
 from io import StringIO
-from app.base_db_manager import BaseDBManager
 
 class Query():
     def __init__(self, query, params=None, fast=False):
@@ -14,7 +13,7 @@ class Query():
         self.fast = fast
 
 
-class PostgreSQLManager(BaseDBManager):
+class PostgreSQLManager():
 
     def __init__(self, user=None, password=None, host=None, port=None, database=None, variables_dict=None):
         super().__init__()
@@ -27,7 +26,6 @@ class PostgreSQLManager(BaseDBManager):
         self.database =  get(variables_dict, "POSTGRESQL_DATABASE", default=None)    if database is None else database 
 
 
-    @overrides(BaseDBManager)
     def connect(self):
         # TODO IMPLEMENT RETRY POLICY
         # connection = psycopg2.connect(  user=os.getenv("POSTGRESQL_USERNAME"),
@@ -43,14 +41,12 @@ class PostgreSQLManager(BaseDBManager):
                                             database=self.database)
 
     
-    @overrides(BaseDBManager)
     def disconnect(self):
         if self.connection is not None:
             if not self.connection.closed:
                 self.logger.info(f'Disconnecting from {self.user}@{self.host}:{self.port}/{self.database}.')
                 self.connection.close()
 
-    @overrides(BaseDBManager)
     def query_execute_many(self, query: Query, commit=False, fetch=False, aslist=False, asdataframe=False, columns=None):
 
         cursor      = None
@@ -70,7 +66,6 @@ class PostgreSQLManager(BaseDBManager):
             cursor.close()
 
 
-    @overrides(BaseDBManager)
     def query_execute(self, query: Query, commit=False, fetch=False, aslist=False, asdataframe=False, columns=None):
         cursor      = None
         try:
@@ -116,7 +111,6 @@ class PostgreSQLManager(BaseDBManager):
             cursor.close()
 
 
-    @overrides(BaseDBManager)
     def query_execute_list(self, query_list, commit=False):
         cursor      = None
         try:
@@ -145,7 +139,6 @@ class PostgreSQLManager(BaseDBManager):
             cursor.close()
 
 
-    @overrides(BaseDBManager)
     def query_execute_copy(self, df, destination_table, columns=None, commit=False):
         cursor      = None
         try:
