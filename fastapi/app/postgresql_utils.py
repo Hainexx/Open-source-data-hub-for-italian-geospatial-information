@@ -5,6 +5,7 @@ import os
 import traceback
 import itertools
 from io import StringIO
+from app.base_db_manager import BaseDBManager
 
 def get(dictionary, key, default=None, common_dictionary=None):
     if key in dictionary:
@@ -29,7 +30,7 @@ class Query():
         self.fast = fast
 
 
-class PostgreSQLManager():
+class PostgreSQLManager(BaseDBManager):
 
     def __init__(self, user=None, password=None, host=None, port=None, database=None, variables_dict=None):
         super().__init__()
