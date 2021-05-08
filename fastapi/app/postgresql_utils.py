@@ -5,7 +5,7 @@ import os
 import traceback
 import itertools
 from io import StringIO
-from base_db_manager import BaseDBManager
+from app.base_db_manager import BaseDBManager
 
 class Query():
     def __init__(self, query, params=None, fast=False):
