@@ -1,7 +1,7 @@
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
-from app.postgresql_utils import PostgreSQLManager
+from app.postgresql_utils import PostgreSQLManager, Query
 
 app = FastAPI()
 db = PostgreSQLManager()

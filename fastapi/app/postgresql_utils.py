@@ -50,7 +50,6 @@ class PostgreSQLManager(BaseDBManager):
         #                                 host=os.getenv("POSTGRESQL_HOST"),
         #                                 port=os.getenv("POSTGRESQL_PORT"),
         #                                 database=os.getenv("POSTGRESQL_DATABASE"))
-        self.logger.info(f'Connecting to {self.user}@{self.host}:{self.port}/{self.database}.')
         self.connection = psycopg2.connect( user=self.user,
                                             password=self.password,
                                             host=self.host,
@@ -61,7 +60,6 @@ class PostgreSQLManager(BaseDBManager):
     def disconnect(self):
         if self.connection is not None:
             if not self.connection.closed:
-                self.logger.info(f'Disconnecting from {self.user}@{self.host}:{self.port}/{self.database}.')
                 self.connection.close()
 
     def query_execute_many(self, query: Query, commit=False, fetch=False, aslist=False, asdataframe=False, columns=None):
