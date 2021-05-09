@@ -7,10 +7,10 @@ from app.postgresql_utils import PostgreSQLManager, Query
 app = FastAPI()
 db = PostgreSQLManager()
 
-@app.get("/test")
+@app.get("/download_csv")
 async def get_csv(name: str):
     query='''
-        SELECT id, name, geometry FROM tb_nations WHERE name = %s
+        SELECT id, name as city_name, geometry FROM vw_buildings_footprints WHERE name = %s
         '''
 
     df = db.query_execute(Query(query, (name,)), fetch=True, asdataframe=True)
