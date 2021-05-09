@@ -7,8 +7,16 @@ app = FastAPI()
 db = PostgreSQLManager()
 
 @app.get("/test")
-def todo(name: str):
-    query='''
-        SELECT id FROM tb_nations WHERE name = %s
-    '''
-    return {'id': db.query_execute(Query(query, (name,)), fetch=True, aslist=True)[0]}
+    async def get_csv(name: str):
+        
+        query='''
+            SELECT id, name, geometry FROM tb_nations WHERE name = %s
+            '''
+
+        df = db.query_execute(Query(query, (name,)), fetch=True, asdataframe=True)
+        stream = io.StringIO()
+        df.to_csv(stream, index = False)
+
+        response = StreamingResponse(iter([stream.getvalue()]),media_type="text/csv")
+        response.headers["Content-Disposition"] = "attachment; filename=export.csv"
+        return response
