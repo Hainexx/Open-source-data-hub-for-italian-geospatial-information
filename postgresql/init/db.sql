@@ -9,7 +9,7 @@ CREATE TABLE tb_nations (
     id SERIAL,
     name text NOT NULL,
     pretty_name text NULL,
-	geometry geometry(MultiPolygon, 4326) NOT NULL
+	geometry geometry(MultiPolygon, 4326) NULL
 );
 
 CREATE UNIQUE INDEX ix_nations on tb_nations (id);
@@ -19,7 +19,7 @@ CREATE TABLE tb_regions (
 	id_nation int NOT NULL,
     name text NOT NULL,
     pretty_name text NULL,
-	geometry geometry(MultiPolygon, 4326) NOT NULL
+	geometry geometry(MultiPolygon, 4326) NULL
 );
 
 CREATE UNIQUE INDEX ix_regions on tb_regions (id);
@@ -32,7 +32,7 @@ CREATE TABLE tb_cities (
 	id_region int NOT NULL,
     name text NOT NULL,
     pretty_name text NULL,
-	geometry geometry(MultiPolygon, 4326) NOT NULL
+	geometry geometry(MultiPolygon, 4326) NULL
 );
 
 CREATE UNIQUE INDEX ix_cities on tb_cities (id);
@@ -52,4 +52,39 @@ ALTER TABLE tb_buildings_footprints ADD CONSTRAINT id_city_fk
 	FOREIGN KEY (id_city) REFERENCES tb_cities(id);
 
 
-INSERT INTO tb_nations(name, pretty_name, geometry) VALUES ("test", "test", ST_GeomFromText("MULTIPOLYGON(((0 0, 1 1, 2 2, 0 0)))"));
+CREATE TABLE stg_buildings_footprints (
+    id INT NOT NULL,
+    city_id INT NOT NULL,
+    city_name text NOT NULL,
+    geometry text NOT NULL
+);
+
+CREATE FUNCTION fn_stg_to_tb_buildings_footprint() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    MERGE INTO tb_cities AS c
+    USING (SELECT NEW.city_name) AS nc
+    ON c.city_name = nc.city_name
+    WHEN NOT MATCHED 
+        INSERT (city_name) VALUES (nc.city_name);
+
+    INSERT INTO tb_buildings_footprints(id_city, geometry) 
+    SELECT (SELECT id from tb_cities WHERE city_name = NEW.city_name), 
+            NEW.geometry ST_SetSRID( ST_GeomFromText(NEW.geometry), 4326)
+    FROM ingester.tb_nodes n_from
+    INNER JOIN ingester.tb_nodes n_to ON n_to.id = NEW.id_node_to
+    WHERE n_from.id = NEW.id_node_from;
+    
+    RETURN NEW;
+END
+$$;
+
+CREATE TRIGGER tr_stg_to_tb_buildings_footprint
+BEFORE INSERT OR UPDATE ON stg_buildings_footprints
+FOR EACH ROW EXECUTE PROCEDURE fn_stg_to_tb_buildings_footprint();
+
+
+
+INSERT INTO tb_nations(name, pretty_name) VALUES ("italy", "Italy");
+INSERT INTO tb_regions(name, pretty_name) VALUES ("lombardy", "Lombardy");

@@ -11,6 +11,7 @@ services:
          - ./postgresql/data:/var/lib/postgresql/data
          - ./postgresql/backups:/backups
          - ./postgresql/init:/init
+         - ./postgresql/files:/files
  
       environment:
          ## MAINTENANCE DB
